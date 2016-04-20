@@ -1,3 +1,5 @@
 .metadata
 Simulator/bin
 Simulator/.settings
+Simulator/.classpath
+.recommenders
