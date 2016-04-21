@@ -27,8 +27,8 @@ public class Map {
 	}
 	
 	public void generate() {
-		int toWall = 45;
-		int limit = 4;
+		int toWall = 15;
+		int limit = 5;
 		int loop = 3;
 		Random rand = new Random();
 		//It's a cellula automata algorithm

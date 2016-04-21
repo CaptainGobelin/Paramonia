@@ -75,7 +75,7 @@ public class MainView {
         // Configure our window
         glfwDefaultWindowHints(); // optional, the current window hints are already the default
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
-        glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); // the window will be resizable
  
         // Create the window
         window = glfwCreateWindow(width, height, name, NULL, NULL);
@@ -88,6 +88,8 @@ public class MainView {
             public void invoke(long window, int key, int scancode, int action, int mods) {
                 if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE )
                     glfwSetWindowShouldClose(window, GLFW_TRUE); // We will detect this in our rendering loop
+                if (key == GLFW_KEY_SPACE && action == GLFW_RELEASE)
+                	controller.generateNewMap();
             }
         });
  

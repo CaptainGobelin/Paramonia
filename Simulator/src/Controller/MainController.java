@@ -21,8 +21,11 @@ public class MainController {
 		
 	}
 	
+	public void generateNewMap() {
+		map.generate();
+	}
+	
 	public Map getMap() {
 		return this.map;
 	}
-
 }

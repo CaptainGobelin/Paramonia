@@ -2,8 +2,6 @@ package Model;
 
 import static Utils.CellConst.*;
 
-import java.util.Random;
-
 public class CellState {
 	
 	private int value;
