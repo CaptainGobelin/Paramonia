@@ -12,6 +12,7 @@ public class MainController {
 	public MainController() {
 		window = new MainView(this, "Paranomia");
 		map = new Map(128, 72, 5);
+		map.generate();
 		
 		window.run();
 	}

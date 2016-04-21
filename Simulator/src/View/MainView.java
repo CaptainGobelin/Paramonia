@@ -63,6 +63,7 @@ public class MainView {
     }
  
     private void init() {
+    	
         // Setup an error callback. The default implementation
         // will print the error message in System.err.
         glfwSetErrorCallback(errorCallback = GLFWErrorCallback.createPrint(System.err));
@@ -75,9 +76,6 @@ public class MainView {
         glfwDefaultWindowHints(); // optional, the current window hints are already the default
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
- 
-        int WIDTH = 300;
-        int HEIGHT = 300;
  
         // Create the window
         window = glfwCreateWindow(width, height, name, NULL, NULL);
@@ -98,8 +96,8 @@ public class MainView {
         // Center our window
         glfwSetWindowPos(
             window,
-            (vidmode.width() - WIDTH) / 2,
-            (vidmode.height() - HEIGHT) / 2
+            (vidmode.width() - width) / 2,
+            (vidmode.height() - height) / 2
         );
  
         // Make the OpenGL context current
@@ -123,6 +121,14 @@ public class MainView {
  
         // Set the clear color
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        
+        glViewport(0, 0, width, height);
+        glClear(GL_COLOR_BUFFER_BIT);
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glOrtho(0, width, 0, height, 1.f, -1.f);
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
  
         // Run the rendering loop until the user has attempted to close
         // the window or has pressed the ESCAPE key.

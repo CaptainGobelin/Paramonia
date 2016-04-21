@@ -9,9 +9,7 @@ public class CellState {
 	private int value;
 	
 	public CellState() {
-		//this.value = FREE_STATE;
-		//TODO remove temp value
-		this.value =  new Random().nextInt(2) + 1;
+		this.value = FREE_STATE;
 	}
 	
 	public CellState(int value) {
