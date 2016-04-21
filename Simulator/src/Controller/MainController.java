@@ -1,6 +1,6 @@
 package Controller;
 
-import Model.Map;
+import Model.Oddworld.Map;
 import View.MainView;
 
 public class MainController {
@@ -18,7 +18,7 @@ public class MainController {
 	}
 	
 	public void step() {
-		
+		map.grow();
 	}
 	
 	public void generateNewMap() {
