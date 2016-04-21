@@ -1,12 +1,22 @@
+package View;
+
+
 import org.lwjgl.*;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
+
+import Controller.MainController;
  
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryUtil.*;
+
+import static Utils.GraphicsConst.*;
  
-public class HelloWorld {
+public class MainView {
+	
+	private MainController controller;
+	private MapDrawer mapDrawer;
  
     // We need to strongly reference callback instances.
     private GLFWErrorCallback errorCallback;
@@ -14,9 +24,29 @@ public class HelloWorld {
  
     // The window handle
     private long window;
+    
+    private String name = "Lorem Ipsum";
+    private int width = WIDTH_DEFAULT;
+    private int height = HEIGHT_DEFAULT;
+    
+    public MainView(MainController controller) {
+    	this.controller = controller;
+    }
+    
+    public MainView(MainController controller, String name) {
+    	this.controller = controller;
+    	this.name = name;
+    }
+    
+    public MainView(MainController controller, String name, int width, int height) {
+    	this.controller = controller;
+    	this.name = name;
+    	this.width = width;
+    	this.height = height;
+    }
  
     public void run() {
-        System.out.println("Hello LWJGL " + Version.getVersion() + "!");
+        System.out.println("Created with LWJGL " + Version.getVersion());
  
         try {
             init();
@@ -50,7 +80,7 @@ public class HelloWorld {
         int HEIGHT = 300;
  
         // Create the window
-        window = glfwCreateWindow(WIDTH, HEIGHT, "Hello World!", NULL, NULL);
+        window = glfwCreateWindow(width, height, name, NULL, NULL);
         if ( window == NULL )
             throw new RuntimeException("Failed to create the GLFW window");
  
@@ -79,6 +109,8 @@ public class HelloWorld {
  
         // Make the window visible
         glfwShowWindow(window);
+        
+        mapDrawer = new MapDrawer(this);
     }
  
     private void loop() {
@@ -90,12 +122,16 @@ public class HelloWorld {
         GL.createCapabilities();
  
         // Set the clear color
-        glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
  
         // Run the rendering loop until the user has attempted to close
         // the window or has pressed the ESCAPE key.
         while ( glfwWindowShouldClose(window) == GLFW_FALSE ) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
+            
+            controller.step();
+            
+            mapDrawer.draw(controller.getMap());
  
             glfwSwapBuffers(window); // swap the color buffers
  
@@ -104,5 +140,13 @@ public class HelloWorld {
             glfwPollEvents();
         }
     }
+
+	public int getWidth() {
+		return width;
+	}
+
+	public int getHeight() {
+		return height;
+	}
     
 }
