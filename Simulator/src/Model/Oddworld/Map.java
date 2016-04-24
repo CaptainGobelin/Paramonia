@@ -9,11 +9,9 @@ import java.util.Random;
 import Model.Inhabitants.*;
 
 public class Map {
-	
-	private final int width;
-	private final int height;
-	private int cellX;
-	private int cellY;
+
+	private int width;
+	private int height;
 	private int cellSize;
 	
 	private Cell[][] grid;
@@ -23,10 +21,8 @@ public class Map {
 	public ArrayList<Paramite> paramitePopulation = new ArrayList<Paramite>();
 	
 	public Map(int cellX, int cellY, int cellSize) {
-		this.width = cellX *  cellSize;
-		this.height = cellY * cellSize;
-		this.cellX = cellX;
-		this.cellY = cellY;
+		this.width = cellX;
+		this.height = cellY;
 		this.cellSize = cellSize;
 		this.grid = new Cell[cellX][cellY];
 		for (int i=0;i<cellX;i++)
@@ -41,9 +37,9 @@ public class Map {
 		Random rand = new Random();
 		//It's a cellula automata algorithm
 		//At te begining each cell is randomly convert
-		for (int i=0;i<cellX;i++)
-			for (int j=0;j<cellY;j++)
-				if ((i==0)||(i==(cellX-1))||(j==0)||(j==(cellY-1)))
+		for (int i=0;i<width;i++)
+			for (int j=0;j<height;j++)
+				if ((i==0)||(i==(width-1))||(j==0)||(j==(height-1)))
 					grid[i][j].setState(BLOC_STATE);
 				else
 					if ((rand.nextInt())<toWall)
@@ -53,10 +49,10 @@ public class Map {
 		//Then we apply four times a simple algorithm
 		//For each cell, if the number of neighboors (include the cell itself)
 		//Is in [1..4] we convert it to a wall
-		int[][] copy = new int[cellX][cellY];
+		int[][] copy = new int[width][height];
 		for (int turn=0;turn<(loop+1);turn++) {
-			for (int i=1;i<cellX-1;i++)
-				for (int j=1;j<cellY-1;j++) {
+			for (int i=1;i<width-1;i++)
+				for (int j=1;j<height-1;j++) {
 					int count1=0;
 					for (int ii=i-1;ii<i+2;ii++)
 						for (int jj=j-1;jj<j+2;jj++)
@@ -68,14 +64,14 @@ public class Map {
 						copy[i][j] = FREE_STATE;
 				}
 			//Here we copy the map, to prepare the new step of the loop
-			for (int i=1;i<cellX-1;i++)
-				for (int j=1;j<cellY-1;j++)
+			for (int i=1;i<width-1;i++)
+				for (int j=1;j<height-1;j++)
 					grid[i][j].setState(copy[i][j]);
 		}
 		//Finally we convert isolated walls to floor (3 times to make it clean)
 		for (int turn=0;turn<loop;turn++) {
-			for (int i=1;i<cellX-1;i++)
-				for (int j=1;j<cellY-1;j++) {
+			for (int i=1;i<width-1;i++)
+				for (int j=1;j<height-1;j++) {
 					int count1=0;
 					for (int ii=i-1;ii<i+2;ii++)
 						for (int jj=j-1;jj<j+2;jj++)
@@ -86,36 +82,41 @@ public class Map {
 					else
 						copy[i][j] = FREE_STATE;
 				}
-			for (int i=1;i<cellX-1;i++)
-				for (int j=1;j<cellY-1;j++)
+			for (int i=1;i<width-1;i++)
+				for (int j=1;j<height-1;j++)
 					grid[i][j].setState(copy[i][j]);
 		}
 		
+		//Free vegetaion and creature's lists
 		vegetationRate = 0.f;
 		spoocePopulation.clear();
 		paramitePopulation.clear();
 		
-		for (int i=0;i<cellX*cellY;i++)
+		//Generating new populations
+		for (int i=0;i<width*height;i++)
 			grow();
 		generateParamitePopulation();
 	}
 	
 	public void grow() {
-		int toGrow = (int)(SPOOCE_GROWING_RATE*cellX*cellY);
+		//At each turn we only have a chance to grow a spooce
+		int toGrow = (int)(SPOOCE_GROWING_RATE*width*height);
 		if (new Random().nextInt(100) < toGrow)
 			addSpooce();
 	}
 	
 	public boolean addSpooce() {
+		//Grow new spooce only if there not too much of them
 		if (vegetationRate >= MAX_VEGETABLE_RATE)
 			return false;
+		//Growing a spooce at a free space
 		Random rand = new Random();
-		int x = rand.nextInt(cellX);
-		int y = rand.nextInt(cellY);
+		int x = rand.nextInt(width);
+		int y = rand.nextInt(height);
 		if (grid[x][y].getState() == FREE_STATE) {
 			spoocePopulation.add(new Spooce(grid[x][y]));
 			grid[x][y].setState(SPOOCE_STATE);
-			vegetationRate += (float)1/(cellX*cellY);
+			vegetationRate += (float)1/(width*height);
 			return true;
 		}
 		return false;
@@ -126,20 +127,20 @@ public class Map {
 			paramitePopulation.add(new Paramite(this));
 	}
 
-	public int getCellX() {
-		return cellX;
+	public int getWidth() {
+		return width;
 	}
 
-	public void setCellX(int cellX) {
-		this.cellX = cellX;
+	public void setWidth(int width) {
+		this.width = width;
 	}
 
-	public int getCellY() {
-		return cellY;
+	public int getHeight() {
+		return height;
 	}
 
-	public void setCellY(int cellY) {
-		this.cellY = cellY;
+	public void setHeight(int height) {
+		this.height = height;
 	}
 
 	public int getCellSize() {
@@ -156,14 +157,6 @@ public class Map {
 
 	public void setGrid(Cell[][] grid) {
 		this.grid = grid;
-	}
-
-	public int getWidth() {
-		return width;
-	}
-
-	public int getHeight() {
-		return height;
 	}
 	
 	public float getVegetationRate() {
