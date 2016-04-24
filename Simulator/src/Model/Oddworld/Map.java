@@ -1,6 +1,7 @@
 package Model.Oddworld;
 
 import static Utils.CellConst.*;
+import static Utils.SimConst.*;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -34,9 +35,9 @@ public class Map {
 	}
 	
 	public void generate() {
-		int toWall = 15;
-		int limit = 5;
-		int loop = 3;
+		int toWall = BLOC_PERCENT;
+		int limit = CELL_SWITCH_LIMIT;
+		int loop = LOOP_GEN;
 		Random rand = new Random();
 		//It's a cellula automata algorithm
 		//At te begining each cell is randomly convert
@@ -120,8 +121,7 @@ public class Map {
 	}
 	
 	public void generateParamitePopulation() {
-		int toGenerate = 15;
-		for (int i=0;i<toGenerate;i++)
+		for (int i=0;i<STARTING_PARAMITE_NB;i++)
 			paramitePopulation.add(new Paramite(this));
 	}
 
