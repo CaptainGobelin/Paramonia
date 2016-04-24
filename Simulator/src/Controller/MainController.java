@@ -2,6 +2,7 @@ package Controller;
 
 import static Utils.SimConst.*;
 
+import Model.Inhabitants.Paramite;
 import Model.Oddworld.Map;
 import View.MainView;
 
@@ -31,6 +32,9 @@ public class MainController {
 	
 	public void step() {
 		map.grow();
+		for (Paramite p : map.paramitePopulation) {
+			p.step();
+		}
 	}
 	
 	public void generateNewMap() {

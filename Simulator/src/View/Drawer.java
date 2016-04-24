@@ -2,7 +2,8 @@ package View;
 
 import static org.lwjgl.opengl.GL11.*;
 
-import Utils.GraphicsConst.Color;
+import static Utils.GraphicsConst.Color;
+import static Utils.Geometry.*;
 
 public abstract class Drawer {
 	
@@ -42,12 +43,5 @@ public abstract class Drawer {
         glVertex3f(x, y+sizeY, 0.f);
         glEnd();
     }
-	
-	public float[] rotatePoint(float[] p, double theta) {
-		float newX = (float) (p[0]*Math.cos(theta) + p[1]*Math.sin(theta));
-		float newY = (float) (p[1]*Math.cos(theta) - p[0]*Math.sin(theta));
-		float[] newP = {newX, newY};
-		return newP;
-	}
 
 }
