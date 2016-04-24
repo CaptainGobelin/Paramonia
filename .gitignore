@@ -3,4 +3,6 @@ Simulator/bin
 Simulator/.settings
 Simulator/.classpath
 .recommenders
-lwjgl
+Simulator/lwjgl.jar
+Simulator/native
+Prototype
