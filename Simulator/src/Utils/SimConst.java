@@ -12,5 +12,14 @@ public class SimConst {
 	
 	public static final float MAX_VEGETABLE_RATE = 0.05f;
 	public static final int STARTING_PARAMITE_NB = 15;
+	
+	//Creatures
+	public static final double SPOOCE_GROWING_RATE = 2.2e-4;
+	
+	public static final float PARAMITE_SPEED_DEFAULT = 1.0f;
+	public static final float PARAMITE_ROATION_SPEED_DEFAULT = 1.0f;
+	
+	public static final float SCRAB_SPEED_DEFAULT = 1.0f;
+	public static final float SCRAB_ROATION_SPEED_DEFAULT = 1.0f;
 
 }

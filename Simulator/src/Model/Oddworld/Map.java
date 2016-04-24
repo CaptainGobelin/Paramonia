@@ -99,8 +99,7 @@ public class Map {
 	}
 	
 	public void grow() {
-		//TODO make growth rate not size dependant
-		int toGrow = 2;
+		int toGrow = (int)(SPOOCE_GROWING_RATE*cellX*cellY);
 		if (new Random().nextInt(100) < toGrow)
 			addSpooce();
 	}
