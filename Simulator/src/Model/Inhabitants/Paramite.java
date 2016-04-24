@@ -2,17 +2,14 @@ package Model.Inhabitants;
 
 import java.util.Random;
 
+import Model.Oddworld.Cell;
 import Model.Oddworld.Map;
 
 import static Utils.CellConst.*;
 import static Utils.SimConst.*;
 import static Utils.Geometry.*;
 
-public class Paramite {
-	
-	private float x;
-	private float y;
-	private float rotation;
+public class Paramite extends MovingBody {
 	
 	public Paramite(Map map) {
 		Random rand = new Random();
@@ -20,7 +17,10 @@ public class Paramite {
 			x = rand.nextInt(map.getCellX()-1);
 			y = rand.nextInt(map.getCellY()-1);
 		} while (map.getGrid()[(int) x][(int) y].getState() != FREE_STATE);
+		x += 0.5f;
+		y += 0.5f;
 		rotation = rand.nextInt(360);
+		this.map = map;
 	}
 	
 	public void step() {
@@ -29,7 +29,8 @@ public class Paramite {
 		case 0: turnLeft(); break;
 		case 1: turnRight(); break;
 		}
-		move();
+		if (!move())
+			rotation += 180;
 	}
 	
 	public boolean turnLeft() {
@@ -48,6 +49,18 @@ public class Paramite {
 		float[] movment = rotatePoint(upDirection, theta);
 		x += movment[0];
 		y += movment[1];
+		for (Cell c : getCollidedCells(map)) {
+			if (c.getState() == BLOC_STATE) {
+				x -= movment[0];
+				y -= movment[1];
+				return false;
+			}
+		}
+		for (Cell c : getCollidedCells(map)) {
+			if (c.getState() == SPOOCE_STATE) {
+				c.setState(FREE_STATE);
+			}
+		}
 		return true;
 	}
 

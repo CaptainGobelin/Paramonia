@@ -95,6 +95,8 @@ public class Map {
 		spoocePopulation.clear();
 		paramitePopulation.clear();
 		
+		for (int i=0;i<cellX*cellY;i++)
+			grow();
 		generateParamitePopulation();
 	}
 	

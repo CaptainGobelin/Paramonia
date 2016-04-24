@@ -8,5 +8,11 @@ public class Geometry {
 		float[] newP = {newX, newY};
 		return newP;
 	}
+	
+	public static double distance2(float x1, float y1, float x2, float y2) {
+		double xd = x2 - x1;
+		double yd = y2 - y1;
+		return Math.sqrt(xd*xd + yd*yd);
+	}
 
 }
