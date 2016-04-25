@@ -87,6 +87,8 @@ public class Map {
 					grid[i][j].setState(copy[i][j]);
 		}
 		
+		flood();
+		
 		//Free vegetaion and creature's lists
 		vegetationRate = 0.f;
 		spoocePopulation.clear();
@@ -96,6 +98,51 @@ public class Map {
 		for (int i=0;i<width*height;i++)
 			grow();
 		generateParamitePopulation();
+	}
+	
+	public void flood() {
+		Random rand = new Random();
+		int count = 0;
+		do {
+			count++;
+			int fX,fY;
+			int tries = 0;
+			//We take a random floor
+			do {
+				tries++;
+				fX = rand.nextInt(width-2)+1;
+				fY = rand.nextInt(height-2)+1;
+			} while (grid[fX][fY].getState() != BLOC_STATE && tries < MAX_TRIES_FLOOD);
+			//And we start flooding from this cell
+			flood_rec(fX, fY);
+		} while (count < LAKES_PERCENT*width*height);
+		//Then we replace flooded cells by normal cells
+		//And non flooded cells by walls
+		for (int i=1;i<width-1;i++) {
+			for (int j=1;j<height-1;j++) {
+				if (grid[i][j].getState() == TEMP_STATE)
+					grid[i][j].setState(WATER_STATE);
+			}
+		}
+	}
+
+	public void flood_rec(int fX, int fY) {
+		//We mark the cell flooded
+		if (grid[fX][fY].getState() == BLOC_STATE)
+			grid[fX][fY].setState(TEMP_STATE);
+		//We call the flood method on the adjacent cells
+		if (fX > 1)
+			if (grid[fX-1][fY].getState() == BLOC_STATE)
+				flood_rec(fX-1,fY);
+		if (fX < width-2)
+			if (grid[fX+1][fY].getState() == BLOC_STATE)
+				flood_rec(fX+1,fY);
+		if (fY > 1)
+			if (grid[fX][fY-1].getState() == BLOC_STATE)
+				flood_rec(fX,fY-1);
+		if (fY < height-2)
+			if (grid[fX][fY+1].getState() == BLOC_STATE)
+				flood_rec(fX,fY+1);
 	}
 	
 	public void grow() {

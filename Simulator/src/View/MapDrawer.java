@@ -21,10 +21,14 @@ public class MapDrawer extends Drawer {
 				if (map.getGrid()[i][j].getState() == BLOC_STATE)
 					drawRect(i*s, j*s, s, s, Color.GREY);
 				else if (map.getGrid()[i][j].getState() == SPOOCE_STATE)
-					drawRect(i*s, j*s, s, s, Color.GREEN);
+					drawRect(i*s, j*s, s, s, Color.GRUE);
+				else if (map.getGrid()[i][j].getState() == WATER_STATE)
+					drawRect(i*s, j*s, s, s, Color.BLUE);
+				else
+					drawRect(i*s, j*s, s, s, Color.GREEN_2);
 			}
 		for (Paramite p : map.paramitePopulation) {
-			drawTriangle(p.getRotation(), p.getX()*s, p.getY()*s, s+1, s+1, Color.BROWN);
+			drawTriangle(p.getRotation(), p.getX()*s, p.getY()*s, s+1, s+1, Color.RED);
 		}
 	}
 

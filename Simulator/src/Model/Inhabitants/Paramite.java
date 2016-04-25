@@ -57,7 +57,7 @@ public class Paramite extends MovingBody {
 		y += movment[1];
 		//If there's an obstacle, cancel the movement
 		for (Cell c : getCollidedCells(map)) {
-			if (c.getState() == BLOC_STATE) {
+			if (c.getState() >= BLOC_STATE) {
 				x -= movment[0];
 				y -= movment[1];
 				return false;

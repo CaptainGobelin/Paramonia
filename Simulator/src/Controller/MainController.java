@@ -14,7 +14,7 @@ public class MainController {
 	
 	public MainController() {
 		System.out.print("Opening window... ");
-		window = new MainView(this, "Paranomia");
+		window = new MainView(this, APP_NAME);
 		System.out.println("done.");
 		
 		//Resolution compute the size of each cell to have a specific number
