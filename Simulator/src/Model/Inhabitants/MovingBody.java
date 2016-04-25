@@ -24,7 +24,7 @@ public abstract class MovingBody {
 			for (int j=startingY-1;j<startingY+2;j++) {
 				if (outOfBounds2(i, j, map.getGrid()))
 						continue;
-				if (distance2(x, y, i, j) < (float)map.getCellSize()/2)
+				if (distance2(x, y, i+0.5f, j+0.5f) <= 1)
 					result.add(map.getGrid()[i][j]);
 			}
 		}
