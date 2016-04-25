@@ -10,7 +10,7 @@ public abstract class Drawer {
 	public void setColor(Color color) {
 		switch (color) {
 		case BLACK: glColor3f(0.0f, 0.0f, 0.0f); break;
-		case WHITE: glColor3f(1.f, 1.f, 1.f); break;
+		case WHITE: glColor4f(1.f, 1.f, 1.f, 0.1f); break;
 		case GREY: glColor3f(0.34f, 0.34f, 0.34f); break;
 		case GREEN: glColor3f(0.38f, 0.4f, 0.184f); break;
 		case GREEN_2: glColor3f(0.43f, 0.475f, 0.235f); break;

@@ -20,6 +20,8 @@ public class SimConst {
 	public static final double LAKES_PERCENT = 6e-4;
 	
 	//Creatures
+	public static final int DIST_VIEW = 10;
+	
 	public static final double SPOOCE_GROWING_RATE = 2.2e-4;
 	
 	public static final float PARAMITE_SPEED_DEFAULT = 0.05f;

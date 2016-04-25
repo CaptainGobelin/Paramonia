@@ -21,5 +21,7 @@ public class CellState {
 	public void setValue(int value) {
 		this.value = value;
 	}
+	
+	
 
 }

@@ -36,6 +36,7 @@ public class Paramite extends MovingBody {
 		//Move back if cannot move forward
 		if (!move())
 			rotation += 180;
+		checkView(map);
 	}
 	
 	public boolean turnLeft() {
