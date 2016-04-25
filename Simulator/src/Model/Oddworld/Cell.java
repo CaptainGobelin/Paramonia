@@ -1,21 +1,23 @@
 package Model.Oddworld;
 
+import static Utils.CellConst.*;
+
 public class Cell {
 	
-	private CellState state;
+	private int state;
 	private boolean viewed;
 	
 	public Cell() {
-		this.state = new CellState();
+		this.state = FREE_STATE;
 		this.viewed = false;
 	}
 	
 	public void setState(int value) {
-		this.state.setValue(value);
+		this.state = value;
 	}
 	
 	public int getState() {
-		return state.getValue();
+		return state;
 	}
 	
 	public boolean isViewed() {
