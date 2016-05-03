@@ -7,8 +7,9 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import Model.Inhabitants.*;
+import Utils.JsonConverter;
 
-public class Map {
+public class Map implements JsonConverter {
 
 	private int width;
 	private int height;
@@ -208,6 +209,20 @@ public class Map {
 	
 	public float getVegetationRate() {
 		return vegetationRate;
+	}
+
+	@Override
+	public String toJSON() {
+		String result = "{\n map: {\n";
+		result += "w: " + width + ", h: " + height + ",\n";
+		result += "cont: [\n";
+		for (int i=0;i<width;i++) {
+			for (int j=0;j<height;j++)
+				result += "{val:" + grid[i][j].getState() + "},";
+			result += '\n';
+		}
+		result = result.substring(0, result.length()-1);
+		return result + "]\n}\n}";
 	}
 
 }

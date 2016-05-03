@@ -59,6 +59,7 @@ public class MainView {
             // Terminate GLFW and free the GLFWErrorCallback
             glfwTerminate();
             errorCallback.release();
+            controller.console.close();
         }
     }
  
