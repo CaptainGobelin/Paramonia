@@ -21,6 +21,9 @@ public class SimConst {
 	public static final int MAX_TRIES_FLOOD = 100;
 	public static final double LAKES_PERCENT = 6e-4;
 	
+	public static final float CONVERT_GRASS = 0.95f;
+	public static final double TO_CONVERT = 2;
+	
 	//Creatures
 	public static final int DIST_VIEW = 10;
 	

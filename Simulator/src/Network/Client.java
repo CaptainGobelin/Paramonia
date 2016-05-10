@@ -22,36 +22,39 @@ public class Client {
     	inputStream = socket.getInputStream();
         outputStream = socket.getOutputStream();
         sendMap();
-        sendCreatures();
+        sendCreatures(false);
     }
 
 	private void sendMap() {
     	controller.console.writeln("Send map...");
     	String json = controller.getMap().toJSON();
-    	sendToClient(json);
+    	sendToClient(json, false);
     }
 	
-	public void sendCreatures() {
-		controller.console.writeln("Send creatures...");
+	public void sendCreatures(boolean mute) {
+		if (!mute)
+			controller.console.writeln("Send creatures...");
 		String json = controller.getMap().creaturesToJSON();
-    	sendToClient(json);
+    	sendToClient(json, mute);
 	}
     
-    public void sendToClient(String json){
+    public void sendToClient(String json, boolean mute){
         try {
             byte[] bytes = json.getBytes();
             ByteBuffer b = ByteBuffer.allocate(4);
             b.putInt(json.length());
             byte[] bytesSize = b.array();
-            controller.console.write("Sending: " + bytes.length + " bytes... ");
+            if (!mute)
+            	controller.console.write("Sending: " + bytes.length + " bytes... ");
             outputStream.write(bytesSize, 0, 4);
             outputStream.write(bytes, 0, bytes.length);
             outputStream.flush();
             if (inputStream.read() == 1) {
+            	if (!mute)
             	controller.console.writeln("done.");
             	return;
             }
-            controller.console.writeln("FAILED.");
+            controller.console.writeln("Data transfer FAILED.");
         } catch (IOException e) {
             e.printStackTrace();
         }

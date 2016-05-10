@@ -2,6 +2,7 @@ package Model.Oddworld;
 
 import static Utils.CellConst.*;
 import static Utils.SimConst.*;
+import static Utils.GraphicsConst.*;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -88,6 +89,7 @@ public class Map implements JsonConverter {
 					grid[i][j].setState(copy[i][j]);
 		}
 		
+		convertGrass();
 		flood();
 		
 		//Free vegetaion and creature's lists
@@ -174,6 +176,38 @@ public class Map implements JsonConverter {
 		for (int i=0;i<STARTING_PARAMITE_NB;i++)
 			paramitePopulation.add(new Paramite(this));
 	}
+	
+	public void convertGrass() {
+		Random rand = new Random();
+		for (int state=DIRT_STATE;state<=GRASS_STATE;state++) {
+			for (int i=0;i<rand.nextInt((int)(width*height*TO_CONVERT));i++) {
+				int x;
+				int y;
+				do {
+					x = rand.nextInt(width-1);
+					y = rand.nextInt(width-1);
+				} while (grid[(int) x][(int) y].getState() >= BLOC_STATE);
+				propagateGrass(state, CONVERT_GRASS, x, y);
+			}
+		}
+	}
+	
+	public void propagateGrass(int state, float rate, int x, int y) {
+		Random rand = new Random();
+		grid[x][y].setState(state);
+		if ((x > 1) && (rand.nextFloat() < rate))
+			if (grid[x-1][y].getState() < BLOC_STATE)
+				propagateGrass(state, rate*0.75f, x-1, y);
+		if ((y > 1) && (rand.nextFloat() < rate))
+			if (grid[x][y-1].getState() < BLOC_STATE)
+				propagateGrass(state, rate*0.75f, x, y-1);
+		if ((x < width-2) && (rand.nextFloat() < rate))
+			if (grid[x+1][y].getState() < BLOC_STATE)
+				propagateGrass(state, rate*0.75f, x+1, y);
+		if ((y < height-2) && (rand.nextFloat() < rate))
+			if (grid[x][y+1].getState() < BLOC_STATE)
+				propagateGrass(state, rate*0.75f, x, y+1);
+	}
 
 	public int getWidth() {
 		return width;
@@ -218,10 +252,15 @@ public class Map implements JsonConverter {
 		result += "cont: [\n";
 		for (int i=0;i<width;i++) {
 			for (int j=0;j<height;j++) {
-				int v = 0;
-				if (grid[i][j].getState() >= BLOC_STATE)
-					v = 1;
-				result += "{val:" + v + "},";
+				switch (grid[i][j].getState()) {
+					case (WATER_STATE): result += "{val:" + SPRITE_WATER + "},";break;
+					case (BLOC_STATE): result += "{val:" + SPRITE_BLOC + "},";break;
+					case (DIRT_STATE): result += "{val:" + SPRITE_DIRT + "},";break;
+					case (GRASS_STATE): result += "{val:" + SPRITE_GRASS_2 + "},";break;
+					case (SHORT_GRASS_STATE): result += "{val:" + SPRITE_GRASS_1 + "},";break;
+					case (TALL_GRASS_STATE): result += "{val:" + SPRITE_GRASS_3 + "},";break;
+					default:result += "{val:" + SPRITE_GRASS_2 + "},";break;
+				}
 			}
 			result += '\n';
 		}

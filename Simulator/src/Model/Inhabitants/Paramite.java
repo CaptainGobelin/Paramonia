@@ -20,7 +20,7 @@ public class Paramite extends MovingBody implements JsonConverter {
 		do {
 			x = rand.nextInt(map.getWidth()-1);
 			y = rand.nextInt(map.getHeight()-1);
-		} while (map.getGrid()[(int) x][(int) y].getState() != FREE_STATE);
+		} while (map.getGrid()[(int) x][(int) y].getState() >= BLOC_STATE);
 		//Placing it at the middle of the cell
 		x += 0.5f;
 		y += 0.5f;

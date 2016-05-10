@@ -63,16 +63,24 @@ public class MainController {
 
 				Client client = new Client (this, socket);
 				
+				long nStep = 0;
 				long timeOffset = (long) (1000.f/FPS);
 				while (true) {
 					long time = System.currentTimeMillis();
 					
 					step();
-					client.sendCreatures();
+					if ((nStep%500) == 0) {
+						console.writeln("Step: " + nStep);
+						client.sendCreatures(false);
+					}
+					else {
+						client.sendCreatures(true);
+					}
 					
 					long spentTime = System.currentTimeMillis() - time;
 					if (spentTime < timeOffset)
 						TimeUnit.MILLISECONDS.sleep(timeOffset - spentTime);
+					nStep++;
 				}
 			} catch (IOException e) {
 				console.writeln("FAILED.");
