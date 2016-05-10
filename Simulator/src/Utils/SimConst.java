@@ -4,11 +4,12 @@ public class SimConst {
 	
 	//General informations
 	public static final String APP_NAME = "Paramonia";
-	public static final boolean GRAPHIC_MODE = true;
+	public static final boolean SERVER_MODE = true;
+	public static final int PORT_NUMBER = 12345;
 	
 	//Map generation pattern
-	public static final int GRID_WIDTH = 128;
-	public static final int GRID_HEIGHT = 96;
+	public static final int GRID_WIDTH = 100;
+	public static final int GRID_HEIGHT = 100;
 	
 	public static final int BLOC_PERCENT = 15;
 	public static final int CELL_SWITCH_LIMIT = 5;

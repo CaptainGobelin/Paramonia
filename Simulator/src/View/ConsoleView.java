@@ -15,9 +15,11 @@ public class ConsoleView {
 	private JTextArea console;
 	private JScrollPane scroll;
 	
+	private boolean newLine;
+	
 	public ConsoleView(String name) {
 		window = new JFrame(name);
-		window.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.getContentPane().setLayout(new BorderLayout());
 		window.setSize(640, 480);
 		window.setLocationRelativeTo(null);
@@ -28,22 +30,30 @@ public class ConsoleView {
 		console.setEditable(false);
 		window.add(scroll);
 		window.setVisible(true);
+		
+		newLine = true;
 	}
 	
 	public void write(String message) {
+		if (newLine)
+			insertTime();
 		console.append(message);
 		seeLastLine();
+		newLine = false;
 	}
 	
 	public void writeln(String message) {
-		insertTime();
+		if (newLine)
+			insertTime();
 		console.append(message + '\n');
 		seeLastLine();
+		newLine = true;
 	}
 	
 	public void flush() {
 		console.setText("");
 		seeLastLine();
+		newLine = true;
 	}
 	
 	public void close() {

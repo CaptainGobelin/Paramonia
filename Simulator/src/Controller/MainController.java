@@ -1,9 +1,16 @@
 package Controller;
 
 import static Utils.SimConst.*;
+import static Utils.GraphicsConst.*;
+
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.concurrent.TimeUnit;
 
 import Model.Inhabitants.Paramite;
 import Model.Oddworld.Map;
+import Network.Client;
 import View.ConsoleView;
 import View.MainView;
 
@@ -18,7 +25,7 @@ public class MainController {
 		System.out.print("Opening terminal... ");
 		console = new ConsoleView(APP_NAME + " - Results");
 		System.out.println("done.");
-		if (GRAPHIC_MODE) {
+		if (!SERVER_MODE) {
 			System.out.print("Opening window... ");
 			window = new MainView(this, APP_NAME);
 			System.out.println("done.");
@@ -38,6 +45,42 @@ public class MainController {
 			System.out.println("done.");
 			
 			window.run();
+		}
+		else {
+			console.write("Connection... ");
+			try {
+				@SuppressWarnings("resource")
+				ServerSocket serverSocket = new ServerSocket(PORT_NUMBER);
+				console.writeln("done.");
+				console.writeln("Wait client... ");
+                Socket socket = serverSocket.accept();
+                console.writeln("Client connected");
+                
+                console.write("Generating map... ");
+    			map = new Map(GRID_WIDTH, GRID_HEIGHT, 1);
+    			map.generate();
+    			console.writeln("done.");
+
+				Client client = new Client (this, socket);
+				
+				long timeOffset = (long) (1000.f/FPS);
+				while (true) {
+					long time = System.currentTimeMillis();
+					
+					step();
+					client.sendCreatures();
+					
+					long spentTime = System.currentTimeMillis() - time;
+					if (spentTime < timeOffset)
+						TimeUnit.MILLISECONDS.sleep(timeOffset - spentTime);
+				}
+			} catch (IOException e) {
+				console.writeln("FAILED.");
+				e.printStackTrace();
+			} catch (InterruptedException e) {
+				console.write("Step interrupted.");
+				e.printStackTrace();
+			}
 		}
 	}
 	

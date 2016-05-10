@@ -217,9 +217,24 @@ public class Map implements JsonConverter {
 		result += "w: " + width + ", h: " + height + ",\n";
 		result += "cont: [\n";
 		for (int i=0;i<width;i++) {
-			for (int j=0;j<height;j++)
-				result += "{val:" + grid[i][j].getState() + "},";
+			for (int j=0;j<height;j++) {
+				int v = 0;
+				if (grid[i][j].getState() >= BLOC_STATE)
+					v = 1;
+				result += "{val:" + v + "},";
+			}
 			result += '\n';
+		}
+		result = result.substring(0, result.length()-1);
+		return result + "]\n}\n}";
+	}
+	
+	public String creaturesToJSON() {
+		String result = "{creatures: {\n";
+		result += "pLen: " + paramitePopulation.size() + ", \n";
+		result += "paramites: [\n";
+		for (Paramite p : paramitePopulation) {
+			result += p.toJSON() + ",";
 		}
 		result = result.substring(0, result.length()-1);
 		return result + "]\n}\n}";

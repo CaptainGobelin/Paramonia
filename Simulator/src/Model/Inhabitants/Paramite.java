@@ -4,14 +4,17 @@ import java.util.Random;
 
 import Model.Oddworld.Cell;
 import Model.Oddworld.Map;
+import Utils.JsonConverter;
 
 import static Utils.CellConst.*;
 import static Utils.SimConst.*;
 import static Utils.Geometry.*;
 
-public class Paramite extends MovingBody {
+public class Paramite extends MovingBody implements JsonConverter {
 	
 	public Paramite(Map map) {
+		super();
+		
 		//Creating a paramite at a free space
 		Random rand = new Random();
 		do {
@@ -95,6 +98,11 @@ public class Paramite extends MovingBody {
 
 	public void setRotation(float rotation) {
 		this.rotation = rotation;
+	}
+
+	@Override
+	public String toJSON() {
+		return "{id: " + id + ", x: " + x + ", y: " + y + "}";
 	}
 
 }

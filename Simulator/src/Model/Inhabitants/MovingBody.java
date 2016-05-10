@@ -9,14 +9,21 @@ import static Utils.Geometry.*;
 import static Utils.Array.*;
 import static Utils.CellConst.*;
 import static Utils.SimConst.*;
+import static Utils.ID.*;
 
 public abstract class MovingBody {
+	
+	protected String id;
 	
 	protected float x;
 	protected float y;
 	protected float rotation;
 	
 	protected Map map;
+	
+	public MovingBody() {
+		id = createID();
+	}
 
 	public ArrayList<Cell> getCollidedCells(Map map) {
 		ArrayList<Cell> result = new ArrayList<Cell>();
