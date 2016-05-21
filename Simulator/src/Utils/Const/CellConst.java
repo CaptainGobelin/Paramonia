@@ -1,4 +1,4 @@
-package Utils;
+package Utils.Const;
 
 public class CellConst {
 	

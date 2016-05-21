@@ -7,8 +7,8 @@ import Model.Oddworld.Map;
 
 import static Utils.Geometry.*;
 import static Utils.Array.*;
-import static Utils.CellConst.*;
-import static Utils.SimConst.*;
+import static Utils.Const.CellConst.*;
+import static Utils.Const.SimConst.*;
 import static Utils.ID.*;
 
 public abstract class MovingBody {
@@ -20,6 +20,10 @@ public abstract class MovingBody {
 	protected float rotation;
 	
 	protected Map map;
+	
+	protected double energy;
+	protected int state;
+	protected int idleTime;
 	
 	public MovingBody() {
 		id = createID();
@@ -49,7 +53,7 @@ public abstract class MovingBody {
 					checkLine(map,i,j);
 	}
 
-	public void checkLine(Map map, int i, int j) {
+	public boolean checkLine(Map map, int i, int j) {
 		//A standard Bresenham algorithm
 		boolean see = true;
 		int xx = Math.round(x);
@@ -65,9 +69,9 @@ public abstract class MovingBody {
 			if (see)
 				map.getGrid()[xx][yy].setViewed(true);
 			if (map.getGrid()[xx][yy].getState() >= BLOC_STATE)
-				break;
+				return false;
 			if ((xx == i) && (yy == j))
-				break;
+				return true;
 			float e2 = 2*e;
 			if (e2 > -dx) {
 				e -= dy;
@@ -78,6 +82,39 @@ public abstract class MovingBody {
 				yy += sy;
 			}
 		}
+		return true;
+	}
+	
+	public float getX() {
+		return x;
+	}
+
+	public void setX(float x) {
+		this.x = x;
+	}
+
+	public float getY() {
+		return y;
+	}
+
+	public void setY(float y) {
+		this.y = y;
+	}
+
+	public float getRotation() {
+		return rotation;
+	}
+
+	public void setRotation(float rotation) {
+		this.rotation = rotation;
+	}
+	
+	public double getEnergy() {
+		return this.energy;
+	}
+	
+	public int getState() {
+		return this.state;
 	}
 	
 }

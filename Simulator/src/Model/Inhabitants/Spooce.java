@@ -1,14 +1,21 @@
 package Model.Inhabitants;
 
-import Model.Oddworld.Cell;
-
 public class Spooce {
 
-	@SuppressWarnings("unused")
-	private Cell cell;
+	private int x;
+	private int y;
 	
-	public Spooce(Cell cell) {
-		this.cell = cell;
+	public Spooce(int x, int y) {
+		this.x = x;
+		this.y = y;
+	}
+
+	public int getX() {
+		return x;
+	}
+
+	public int getY() {
+		return y;
 	}
 	
 }

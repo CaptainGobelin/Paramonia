@@ -1,8 +1,7 @@
 package View;
 
 import static org.lwjgl.opengl.GL11.*;
-
-import static Utils.GraphicsConst.Color;
+import static Utils.Const.GraphicsConst.Color;
 import static Utils.Geometry.*;
 
 public abstract class Drawer {

@@ -1,16 +1,19 @@
 package Model.Oddworld;
 
-import static Utils.CellConst.*;
-import static Utils.SimConst.*;
-import static Utils.GraphicsConst.*;
+import static Utils.Const.CellConst.*;
+import static Utils.Const.GraphicsConst.*;
+import static Utils.Const.SimConst.*;
 
 import java.util.ArrayList;
 import java.util.Random;
 
+import Controller.MainController;
 import Model.Inhabitants.*;
 import Utils.JsonConverter;
 
 public class Map implements JsonConverter {
+	
+	private MainController controller;
 
 	private int width;
 	private int height;
@@ -21,15 +24,17 @@ public class Map implements JsonConverter {
 	private float vegetationRate = 0;
 	public ArrayList<Spooce> spoocePopulation = new ArrayList<Spooce>();
 	public ArrayList<Paramite> paramitePopulation = new ArrayList<Paramite>();
+	public ArrayList<Scrab> scrabPopulation = new ArrayList<Scrab>();
 	
-	public Map(int cellX, int cellY, int cellSize) {
+	public Map(MainController controller, int cellX, int cellY, int cellSize) {
 		this.width = cellX;
 		this.height = cellY;
 		this.cellSize = cellSize;
 		this.grid = new Cell[cellX][cellY];
 		for (int i=0;i<cellX;i++)
 			for (int j=0;j<cellY;j++)
-				grid[i][j] = new Cell();
+				grid[i][j] = new Cell(i, j);
+		this.controller = controller;
 	}
 	
 	public void generate() {
@@ -93,14 +98,46 @@ public class Map implements JsonConverter {
 		flood();
 		
 		//Free vegetaion and creature's lists
-		vegetationRate = 0.f;
-		spoocePopulation.clear();
-		paramitePopulation.clear();
+		clear();
 		
 		//Generating new populations
 		for (int i=0;i<width*height;i++)
 			grow();
 		generateParamitePopulation();
+		//generateScrabPopulation();
+	}
+	
+	public void clear() {
+		for (Spooce s : spoocePopulation)
+			removeSpooce(s);
+		vegetationRate = 0.f;
+		spoocePopulation.clear();
+		paramitePopulation.clear();
+		scrabPopulation.clear();
+	}
+	
+	public void newGeneration() {
+		Random rand = new Random();
+		ArrayList<Paramite> newParamitePop = new ArrayList<Paramite>();
+		double totalFitnessParamite = 0;
+		for (Paramite p : paramitePopulation)
+			totalFitnessParamite += p.getFitness();
+		controller.console.writeln("Mean fitness: " + totalFitnessParamite/paramitePopulation.size());
+		for (int i=0;i<STARTING_PARAMITE_NB;i++) {
+			float r = rand.nextFloat();
+			double objective = 0;
+			for (Paramite p : paramitePopulation) {
+				objective += p.getFitness()/totalFitnessParamite;
+				if (r <= objective) {
+					newParamitePop.add(new Paramite(this, p.getBrain()));
+					break;
+				}
+			}
+		}
+		clear();
+		for (int i=0;i<width*height;i++)
+			grow();
+		paramitePopulation = newParamitePop;
 	}
 	
 	public void flood() {
@@ -163,18 +200,29 @@ public class Map implements JsonConverter {
 		Random rand = new Random();
 		int x = rand.nextInt(width);
 		int y = rand.nextInt(height);
-		if (grid[x][y].getState() == FREE_STATE) {
-			spoocePopulation.add(new Spooce(grid[x][y]));
-			grid[x][y].setState(SPOOCE_STATE);
+		if (grid[x][y].getState() == FREE_STATE && !grid[x][y].isSpooced()) {
+			spoocePopulation.add(new Spooce(x, y));
 			vegetationRate += (float)1/(width*height);
+			grid[x][y].setSpooced(true);
 			return true;
 		}
 		return false;
 	}
 	
+	public void removeSpooce(Spooce spooce) {
+		grid[spooce.getX()][spooce.getY()].setSpooced(false);
+		vegetationRate -= (float)1/(width*height);
+		//spoocePopulation.remove(spooce);
+	}
+	
 	public void generateParamitePopulation() {
 		for (int i=0;i<STARTING_PARAMITE_NB;i++)
-			paramitePopulation.add(new Paramite(this));
+			paramitePopulation.add(new Paramite(this, null));
+	}
+	
+	public void generateScrabPopulation() {
+		for (int i=0;i<STARTING_SCRAB_NB;i++)
+			scrabPopulation.add(new Scrab(this));
 	}
 	
 	public void convertGrass() {

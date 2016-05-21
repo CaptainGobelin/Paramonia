@@ -2,17 +2,23 @@ package Model.Inhabitants;
 
 import java.util.Random;
 
+import Model.NeuralNet;
 import Model.Oddworld.Cell;
 import Model.Oddworld.Map;
 import Utils.JsonConverter;
 
-import static Utils.CellConst.*;
-import static Utils.SimConst.*;
+import static Utils.Const.CellConst.*;
+import static Utils.Const.SimConst.*;
 import static Utils.Geometry.*;
 
 public class Paramite extends MovingBody implements JsonConverter {
 	
-	public Paramite(Map map) {
+	private NeuralNet brain;
+	private double fitness;
+	
+	private Spooce food;
+	
+	public Paramite(Map map, NeuralNet parentBrain) {
 		super();
 		
 		//Creating a paramite at a free space
@@ -27,28 +33,85 @@ public class Paramite extends MovingBody implements JsonConverter {
 		//Put a random rotation
 		rotation = rand.nextInt(360);
 		this.map = map;
+		this.energy = PARAMITE_STARTING_ENERGY;
+		this.state = IDLE_STATE;
+		this.idleTime = 0;
+		
+		if (parentBrain == null)
+			brain = new NeuralNet((PARAMITE_EYES_NUMBER+2)*3, 2);
+		else
+			brain = new NeuralNet(parentBrain);
+		this.fitness = 0;
+		this.food = null;
 	}
 	
 	public void step() {
-		//Dumb paramite always moves and turns randomly
-		Random rand = new Random();
-		switch (rand.nextInt(3)) {
-		case 0: turnLeft(); break;
-		case 1: turnRight(); break;
+		if (energy <= 0)
+			die();
+		else {
+			energy--;
+			fitness++;
 		}
-		//Move back if cannot move forward
-		if (!move())
-			rotation += 180;
+		if (idleTime > 0) {
+			idleTime--;
+		}
+		else if (state == EATING_STATE) {
+			food = null;
+			state = IDLE_STATE;
+		}
+		if (state >= DONT_DISTURB_STATE)
+			return;
+		state = IDLE_STATE;
 		checkView(map);
+		checkView();
+		if (brain.nodes[brain.nodes.length-2] >= NEURAL_THRESHOLD) {
+			turnLeft();
+		}
+		if (brain.nodes[brain.nodes.length-1] >= NEURAL_THRESHOLD) {
+			turnRight();
+		}
+		//if (brain.nodes[brain.nodes.length-3] >= NEURAL_THRESHOLD) {
+			//Move back if cannot move forward
+			if (!move())
+				rotation += 180;
+			state = WALKING_STATE;
+		//}
+		
+		for (Spooce s : map.spoocePopulation) {
+			double dist = distance2(s.getX(), s.getY(), x, y);
+			if (dist <= 1) {
+				food = s;
+				break;
+			}
+		}
+		if (food != null) {
+			eat(food);
+		}
+	}
+	
+	public void die() {
+		state = DEAD_STATE;
+	}
+	
+	public void eat(Spooce s) {
+		map.removeSpooce(s);
+		map.spoocePopulation.remove(s);
+		energy += PARAMITE_EATING_ENERGY + PARAMITE_EATING_COOLDOWN;
+		idleTime = PARAMITE_EATING_COOLDOWN;
+		state = EATING_STATE;
 	}
 	
 	public boolean turnLeft() {
 		rotation -= PARAMITE_ROATION_SPEED_DEFAULT;
+		if (rotation < 0)
+			rotation = 360.f - rotation;
 		return true;
 	}
 	
 	public boolean turnRight() {
 		rotation += PARAMITE_ROATION_SPEED_DEFAULT;
+		if (rotation > 360)
+			rotation -= 360.f;
 		return true;
 	}
 	
@@ -67,37 +130,55 @@ public class Paramite extends MovingBody implements JsonConverter {
 				return false;
 			}
 		}
-		//Eat the spooce if there's one
-		for (Cell c : getCollidedCells(map)) {
-			if (c.getState() == SPOOCE_STATE) {
-				c.setState(FREE_STATE);
-			}
-		}
 		return true;
 	}
-
-	public float getX() {
-		return x;
+	
+	private void checkView() {
+		double[] objectsInSight = new double[PARAMITE_EYES_NUMBER + 2];
+		for (int i=0;i<objectsInSight.length;i++)
+			objectsInSight[i] = DIST_VIEW;
+		for (Spooce s : map.spoocePopulation) {
+			if (!map.getGrid()[s.getX()][s.getY()].isViewed())
+				continue;
+			double dist = distance2(s.getX(), s.getY(), x, y);
+			if (dist > DIST_VIEW)
+				continue;
+			int zone = 0;
+			double angle = upAngle(s.getX()-x, s.getY()-y);
+			double localRot = rotation*2*Math.PI/360.f;
+			angle = angle- localRot;
+			if (angle < -Math.PI)
+				angle += 2*Math.PI;
+			if (angle > Math.PI)
+				angle -= 2*Math.PI;
+			if (angle < Math.PI/2) {
+				zone = PARAMITE_EYES_NUMBER+1;
+			}
+			else if (angle < Math.PI) {
+				zone = (int) (angle/(Math.PI/PARAMITE_EYES_NUMBER))-1;
+			}
+			else
+				zone = PARAMITE_EYES_NUMBER;
+				
+			if (dist > objectsInSight[zone])
+				continue;
+			objectsInSight[zone] = dist;
+		}
+		float[] brainInputs = new float[(PARAMITE_EYES_NUMBER+2)*3];
+		for (int i=0;i<objectsInSight.length;i++) {
+			if (objectsInSight[i] == DIST_VIEW)
+				continue;
+			brainInputs[i*3 + 1] = 1.f;
+		}
+		brain.compute(brainInputs);
 	}
-
-	public void setX(float x) {
-		this.x = x;
+	
+	public double getFitness() {
+		return this.fitness;
 	}
-
-	public float getY() {
-		return y;
-	}
-
-	public void setY(float y) {
-		this.y = y;
-	}
-
-	public float getRotation() {
-		return rotation;
-	}
-
-	public void setRotation(float rotation) {
-		this.rotation = rotation;
+	
+	public NeuralNet getBrain() {
+		return this.brain;
 	}
 
 	@Override

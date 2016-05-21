@@ -1,9 +1,9 @@
 package Controller;
 
+import static Utils.Const.SimConst.APP_NAME;
+
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-
-import static Utils.SimConst.APP_NAME;
 
 public class Launch {
 	 

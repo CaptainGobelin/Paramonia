@@ -6,12 +6,11 @@ import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
 
 import Controller.MainController;
- 
+
+import static Utils.Const.GraphicsConst.*;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryUtil.*;
-
-import static Utils.GraphicsConst.*;
  
 public class MainView {
 	
@@ -91,6 +90,13 @@ public class MainView {
                     glfwSetWindowShouldClose(window, GLFW_TRUE); // We will detect this in our rendering loop
                 if (key == GLFW_KEY_SPACE && action == GLFW_RELEASE)
                 	controller.generateNewMap();
+                if (key == GLFW_KEY_RIGHT && action == GLFW_RELEASE)
+                	SPEED *= 2;
+                if (key == GLFW_KEY_LEFT && action == GLFW_RELEASE) {
+                	SPEED /= 2;
+                	if (SPEED <= 1)
+                		SPEED = 1;
+                }
             }
         });
  
