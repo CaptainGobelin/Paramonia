@@ -16,7 +16,7 @@ public class NeuralNet {
 	
 	public NeuralNet(int inSize, int outSize) {
 		Random rand = new Random();
-		int hiddenSize = rand.nextInt(inSize*2) + inSize;
+		int hiddenSize = /*rand.nextInt*/(inSize*2) + inSize;
 		this.inputPlage = inSize;
 		this.outputPlage = inSize + hiddenSize;
 		nodes = new float[inSize+outSize+hiddenSize];
@@ -39,25 +39,31 @@ public class NeuralNet {
 		sortLinks();
 	}
 	
-	public NeuralNet(NeuralNet parent) {
+	public NeuralNet(NeuralNet parentA, NeuralNet parentB) {
 		Random rand = new Random();
-		this.inputPlage = parent.inputPlage;
-		this.outputPlage = parent.outputPlage;
-		this.nodesLength = parent.nodesLength;
+		this.inputPlage = parentA.inputPlage;
+		this.outputPlage = parentA.outputPlage;
+		this.nodesLength = parentA.nodesLength;
 		nodes = new float[nodesLength];
-		int inSize = parent.inputPlage;
-		int outSize = parent.nodesLength - parent.outputPlage;
-		int hiddenSize = parent.nodesLength - inSize - outSize;
+		int inSize = parentA.inputPlage;
+		int outSize = parentA.nodesLength - parentA.outputPlage;
+		int hiddenSize = parentA.nodesLength - inSize - outSize;
 		
-		for (NeuralConnection nc : parent.links) {
-			if (rand.nextFloat() <= MUTATION_RATE)
-				continue;
+		ArrayList<NeuralConnection> list = parentA.links;
+		int i = 0;
+		while (i < list.size()) {
+			NeuralConnection nc = list.get(i);
+			/*if (rand.nextFloat() <= MUTATION_RATE)
+				continue;*/
 			float w = nc.weight;
 			if (rand.nextFloat() <= MUTATION_RATE)
 				w = rand.nextFloat()*2 - 1;
 			this.links.add(new NeuralConnection(nc.in, nc.out, w));
+			if (rand.nextFloat() <= 1/(parentA.links.size()/2))
+				list = parentB.links;
+			i++;
 		}
-		while (rand.nextFloat() <= (MUTATION_RATE/2)) {
+		/*while (rand.nextFloat() <= (MUTATION_RATE/2)) {
 			int in = rand.nextInt(inSize);
 			int out = rand.nextInt(hiddenSize) + inputPlage;
 			if (linkIsNotTaken(in, out))
@@ -68,7 +74,7 @@ public class NeuralNet {
 			int out = rand.nextInt(outSize) + outputPlage;
 			if (linkIsNotTaken(in, out))
 				links.add(new NeuralConnection(in, out, rand.nextFloat()*2 - 1));
-		}
+		}*/
 	}
 	
 	public void compute(float[] inputs) {

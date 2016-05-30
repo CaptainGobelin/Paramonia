@@ -119,9 +119,11 @@ public class Map implements JsonConverter {
 	public void newGeneration() {
 		Random rand = new Random();
 		ArrayList<Paramite> newParamitePop = new ArrayList<Paramite>();
+		Paramite[] parentA = new Paramite[STARTING_PARAMITE_NB];
+		Paramite[] parentB = new Paramite[STARTING_PARAMITE_NB];
 		double totalFitnessParamite = 0;
 		for (Paramite p : paramitePopulation)
-			totalFitnessParamite += p.getFitness();
+			totalFitnessParamite += p.getFitness() - PARAMITE_STARTING_ENERGY;
 		controller.console.writeln("Mean fitness: " + totalFitnessParamite/paramitePopulation.size());
 		for (int i=0;i<STARTING_PARAMITE_NB;i++) {
 			float r = rand.nextFloat();
@@ -129,11 +131,24 @@ public class Map implements JsonConverter {
 			for (Paramite p : paramitePopulation) {
 				objective += p.getFitness()/totalFitnessParamite;
 				if (r <= objective) {
-					newParamitePop.add(new Paramite(this, p.getBrain()));
+					parentA[i] = p;
 					break;
 				}
 			}
 		}
+		for (int i=0;i<STARTING_PARAMITE_NB;i++) {
+			float r = rand.nextFloat();
+			double objective = 0;
+			for (Paramite p : paramitePopulation) {
+				objective += p.getFitness()/totalFitnessParamite;
+				if (r <= objective) {
+					parentB[i] = p;
+					break;
+				}
+			}
+		}
+		for (int i=0;i<STARTING_PARAMITE_NB;i++)
+			newParamitePop.add(new Paramite(this, parentA[i].getBrain(), parentB[i].getBrain()));
 		clear();
 		for (int i=0;i<width*height;i++)
 			grow();
@@ -217,7 +232,7 @@ public class Map implements JsonConverter {
 	
 	public void generateParamitePopulation() {
 		for (int i=0;i<STARTING_PARAMITE_NB;i++)
-			paramitePopulation.add(new Paramite(this, null));
+			paramitePopulation.add(new Paramite(this, null, null));
 	}
 	
 	public void generateScrabPopulation() {

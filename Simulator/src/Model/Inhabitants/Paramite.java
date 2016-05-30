@@ -18,7 +18,7 @@ public class Paramite extends MovingBody implements JsonConverter {
 	
 	private Spooce food;
 	
-	public Paramite(Map map, NeuralNet parentBrain) {
+	public Paramite(Map map, NeuralNet parentABrain, NeuralNet parentBBrain) {
 		super();
 		
 		//Creating a paramite at a free space
@@ -37,10 +37,10 @@ public class Paramite extends MovingBody implements JsonConverter {
 		this.state = IDLE_STATE;
 		this.idleTime = 0;
 		
-		if (parentBrain == null)
+		if (parentABrain == null || parentBBrain == null)
 			brain = new NeuralNet((PARAMITE_EYES_NUMBER+2)*3, 2);
 		else
-			brain = new NeuralNet(parentBrain);
+			brain = new NeuralNet(parentABrain, parentBBrain);
 		this.fitness = 0;
 		this.food = null;
 	}
@@ -168,7 +168,9 @@ public class Paramite extends MovingBody implements JsonConverter {
 		for (int i=0;i<objectsInSight.length;i++) {
 			if (objectsInSight[i] == DIST_VIEW)
 				continue;
-			brainInputs[i*3 + 1] = 1.f;
+			brainInputs[i*3 + 0] = .4f;
+			brainInputs[i*3 + 1] = .5f;
+			brainInputs[i*3 + 2] = .2f;
 		}
 		brain.compute(brainInputs);
 	}
