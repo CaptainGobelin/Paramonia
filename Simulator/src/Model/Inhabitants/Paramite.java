@@ -1,5 +1,6 @@
 package Model.Inhabitants;
 
+import java.util.Comparator;
 import java.util.Random;
 
 import Model.NeuralNet;
@@ -38,7 +39,7 @@ public class Paramite extends MovingBody implements JsonConverter {
 		this.idleTime = 0;
 		
 		if (parentABrain == null || parentBBrain == null)
-			brain = new NeuralNet((PARAMITE_EYES_NUMBER+2)*3, 2);
+			brain = new NeuralNet(1, 2);
 		else
 			brain = new NeuralNet(parentABrain, parentBBrain);
 		this.fitness = 0;
@@ -62,7 +63,7 @@ public class Paramite extends MovingBody implements JsonConverter {
 		if (state >= DONT_DISTURB_STATE)
 			return;
 		state = IDLE_STATE;
-		checkView(map);
+		//checkView(map);
 		checkView();
 		if (brain.nodes[brain.nodes.length-2] >= NEURAL_THRESHOLD) {
 			turnLeft();
@@ -134,7 +135,32 @@ public class Paramite extends MovingBody implements JsonConverter {
 	}
 	
 	private void checkView() {
-		double[] objectsInSight = new double[PARAMITE_EYES_NUMBER + 2];
+		map.spoocePopulation.sort(new Comparator<Spooce>() {
+
+			@Override
+			public int compare(Spooce o1, Spooce o2) {
+				double dist1 = distance2(o1.getX(), o1.getY(), x, y);
+				double dist2 = distance2(o2.getX(), o2.getY(), x, y);
+				return Double.compare(dist1, dist2);
+			}
+		});
+		for (Spooce s : map.spoocePopulation) {
+			if (!checkLine(map, s.getX(), s.getY()))
+				continue;
+			float angle = (float) upAngle(s.getX()-x, s.getY()-y);
+			float localRot = (float) (rotation*2*Math.PI/360.f);
+			angle = angle- localRot;
+			if (angle < -Math.PI)
+				angle += 2*Math.PI;
+			if (angle > Math.PI)
+				angle -= 2*Math.PI;
+			angle /= (2*Math.PI);
+			float[] brainInputs = new float[1];
+			brainInputs[0] = angle;
+			brain.compute(brainInputs);
+			break;
+		}
+		/*double[] objectsInSight = new double[PARAMITE_EYES_NUMBER + 2];
 		for (int i=0;i<objectsInSight.length;i++)
 			objectsInSight[i] = DIST_VIEW;
 		for (Spooce s : map.spoocePopulation) {
@@ -172,7 +198,7 @@ public class Paramite extends MovingBody implements JsonConverter {
 			brainInputs[i*3 + 1] = .5f;
 			brainInputs[i*3 + 2] = .2f;
 		}
-		brain.compute(brainInputs);
+		brain.compute(brainInputs);*/
 	}
 	
 	public double getFitness() {

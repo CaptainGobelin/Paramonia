@@ -22,21 +22,29 @@ public class NeuralNet {
 		nodes = new float[inSize+outSize+hiddenSize];
 		this.nodesLength = nodes.length;
 		
-		int linksSize = rand.nextInt(inSize*hiddenSize);
+		/*int linksSize = rand.nextInt(inSize*hiddenSize);
 		for (int i=0;i<linksSize;i++) {
 			int in = rand.nextInt(inSize);
 			int out = rand.nextInt(hiddenSize) + inputPlage;
 			if (linkIsNotTaken(in, out))
 				links.add(new NeuralConnection(in, out, rand.nextFloat()*2 - 1));
 		}
-		linksSize = rand.nextInt(outSize*hiddenSize);
+		linksSize = 1 + rand.nextInt(outSize*hiddenSize);
 		for (int i=0;i<linksSize;i++) {
 			int in = rand.nextInt(hiddenSize) + inputPlage;
 			int out = rand.nextInt(outSize) + outputPlage;
 			if (linkIsNotTaken(in, out))
 				links.add(new NeuralConnection(in, out, rand.nextFloat()*2 - 1));
 		}
-		sortLinks();
+		sortLinks();*/
+		for (int i=0;i<inSize;i++)
+			for (int j=inputPlage;j<outputPlage;j++) {
+				links.add(new NeuralConnection(i, j, rand.nextFloat()*2 - 1));
+			}
+		for (int i=inputPlage;i<outputPlage;i++)
+			for (int j=outputPlage;j<nodes.length;j++) {
+				links.add(new NeuralConnection(i, j, rand.nextFloat()*2 - 1));
+			}
 	}
 	
 	public NeuralNet(NeuralNet parentA, NeuralNet parentB) {
@@ -59,7 +67,7 @@ public class NeuralNet {
 			if (rand.nextFloat() <= MUTATION_RATE)
 				w = rand.nextFloat()*2 - 1;
 			this.links.add(new NeuralConnection(nc.in, nc.out, w));
-			if (rand.nextFloat() <= 1/(parentA.links.size()/2))
+			if (rand.nextFloat() <= 1/(1+(parentA.links.size()/2)))
 				list = parentB.links;
 			i++;
 		}
