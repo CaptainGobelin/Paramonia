@@ -18,6 +18,7 @@ public class Map implements JsonConverter {
 	private int width;
 	private int height;
 	private int cellSize;
+	private int gen;
 	
 	private Cell[][] grid;
 	
@@ -30,6 +31,7 @@ public class Map implements JsonConverter {
 		this.width = cellX;
 		this.height = cellY;
 		this.cellSize = cellSize;
+		this.gen = 1;
 		this.grid = new Cell[cellX][cellY];
 		for (int i=0;i<cellX;i++)
 			for (int j=0;j<cellY;j++)
@@ -101,10 +103,10 @@ public class Map implements JsonConverter {
 		clear();
 		
 		//Generating new populations
-		for (int i=0;i<width*height;i++)
+		for (int i=0;i<width*height*SPOOCE_GROWING_RATE;i++)
 			grow();
 		generateParamitePopulation();
-		//generateScrabPopulation();
+		generateScrabPopulation();
 	}
 	
 	public void clear() {
@@ -124,10 +126,11 @@ public class Map implements JsonConverter {
 		double totalFitnessParamite = 0;
 		for (Paramite p : paramitePopulation)
 			totalFitnessParamite += p.getFitness() - PARAMITE_STARTING_ENERGY;
-		controller.console.writeln("Mean fitness: " + totalFitnessParamite/paramitePopulation.size());
+		controller.console.writeln(" Paramite mean fitness: " + totalFitnessParamite/paramitePopulation.size());
 		for (int i=0;i<STARTING_PARAMITE_NB;i++) {
 			float r = rand.nextFloat();
 			double objective = 0;
+			parentA[i] = paramitePopulation.get(0);
 			for (Paramite p : paramitePopulation) {
 				objective += p.getFitness()/totalFitnessParamite;
 				if (r <= objective) {
@@ -139,6 +142,7 @@ public class Map implements JsonConverter {
 		for (int i=0;i<STARTING_PARAMITE_NB;i++) {
 			float r = rand.nextFloat();
 			double objective = 0;
+			parentB[i] = paramitePopulation.get(0);
 			for (Paramite p : paramitePopulation) {
 				objective += p.getFitness()/totalFitnessParamite;
 				if (r <= objective) {
@@ -149,10 +153,47 @@ public class Map implements JsonConverter {
 		}
 		for (int i=0;i<STARTING_PARAMITE_NB;i++)
 			newParamitePop.add(new Paramite(this, parentA[i].getBrain(), parentB[i].getBrain()));
+		
+		ArrayList<Scrab> newScrabPop = new ArrayList<Scrab>();
+		Scrab[] parentAb = new Scrab[STARTING_SCRAB_NB];
+		Scrab[] parentBb = new Scrab[STARTING_SCRAB_NB];
+		double totalFitnessScrab = 0;
+		for (Scrab s : scrabPopulation)
+			totalFitnessScrab += s.getFitness() - SCRAB_STARTING_ENERGY;
+		controller.console.writeln(" Scrab mean fitness: " + totalFitnessScrab/scrabPopulation.size());
+		for (int i=0;i<STARTING_SCRAB_NB;i++) {
+			float r = rand.nextFloat();
+			double objective = 0;
+			parentAb[i] = scrabPopulation.get(0);
+			for (Scrab s : scrabPopulation) {
+				objective += s.getFitness()/totalFitnessScrab;
+				if (r <= objective) {
+					parentAb[i] = s;
+					break;
+				}
+			}
+		}
+		for (int i=0;i<STARTING_SCRAB_NB;i++) {
+			float r = rand.nextFloat();
+			double objective = 0;
+			parentBb[i] = scrabPopulation.get(0);
+			for (Scrab s : scrabPopulation) {
+				objective += s.getFitness()/totalFitnessScrab;
+				if (r <= objective) {
+					parentBb[i] = s;
+					break;
+				}
+			}
+		}
+		for (int i=0;i<STARTING_SCRAB_NB;i++)
+			newScrabPop.add(new Scrab(this, parentAb[i].getBrain(), parentBb[i].getBrain()));
 		clear();
-		for (int i=0;i<width*height;i++)
+		for (int i=0;i<width*height*SPOOCE_GROWING_RATE;i++)
 			grow();
 		paramitePopulation = newParamitePop;
+		scrabPopulation = newScrabPop;
+		
+		gen++;
 	}
 	
 	public void flood() {
@@ -202,9 +243,15 @@ public class Map implements JsonConverter {
 	
 	public void grow() {
 		//At each turn we only have a chance to grow a spooce
-		int toGrow = (int)(SPOOCE_GROWING_RATE*width*height);
+		/*int toGrow = (int)(SPOOCE_GROWING_RATE*width*height);
 		if (new Random().nextInt(100) < toGrow)
-			addSpooce();
+			addSpooce();*/
+		int count = 0;
+		while (!addSpooce()) {
+			count++;
+			if (count >= 1000)
+				break;
+		}
 	}
 	
 	public boolean addSpooce() {
@@ -215,7 +262,7 @@ public class Map implements JsonConverter {
 		Random rand = new Random();
 		int x = rand.nextInt(width);
 		int y = rand.nextInt(height);
-		if (grid[x][y].getState() == FREE_STATE && !grid[x][y].isSpooced()) {
+		if (grid[x][y].getState() < BLOC_STATE && !grid[x][y].isSpooced()) {
 			spoocePopulation.add(new Spooce(x, y));
 			vegetationRate += (float)1/(width*height);
 			grid[x][y].setSpooced(true);
@@ -237,7 +284,7 @@ public class Map implements JsonConverter {
 	
 	public void generateScrabPopulation() {
 		for (int i=0;i<STARTING_SCRAB_NB;i++)
-			scrabPopulation.add(new Scrab(this));
+			scrabPopulation.add(new Scrab(this, null, null));
 	}
 	
 	public void convertGrass() {
@@ -332,14 +379,32 @@ public class Map implements JsonConverter {
 	}
 	
 	public String creaturesToJSON() {
-		String result = "{creatures: {\n";
+		String result = "{gen: " + gen + ", creatures: {\n";
 		result += "pLen: " + paramitePopulation.size() + ", \n";
+		result += "scLen: " + scrabPopulation.size() + ", \n";
+		result += "spLen: " + spoocePopulation.size() + ", \n";
+		
 		result += "paramites: [\n";
 		for (Paramite p : paramitePopulation) {
 			result += p.toJSON() + ",";
 		}
 		result = result.substring(0, result.length()-1);
-		return result + "]\n}\n}";
+		result += "],\n";
+		
+		result += "scrabs: [\n";
+		for (Scrab s : scrabPopulation) {
+			result += s.toJSON() + ",";
+		}
+		result = result.substring(0, result.length()-1);
+		result += "],\n";
+		
+		result += "spooces: [\n";
+		for (Spooce s : spoocePopulation) {
+			result += s.toJSON() + ",";
+		}
+		result = result.substring(0, result.length()-1);
+		result += "]\n";
+		return result + "\n}\n}";
 	}
 
 }

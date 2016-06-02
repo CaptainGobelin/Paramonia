@@ -7,7 +7,7 @@ import Model.Oddworld.Map;
 
 import static Utils.Const.CellConst.*;
 import static Utils.Const.GraphicsConst.*;
-import static org.lwjgl.opengl.GL11.*;
+//import static org.lwjgl.opengl.GL11.*;
 
 public class MapDrawer extends Drawer {
 	
@@ -19,7 +19,7 @@ public class MapDrawer extends Drawer {
 	}
 	
 	public void draw(Map map) {
-		int s = map.getCellSize();
+		/*int s = map.getCellSize();
 		for (int i=0;i<map.getWidth();i++)
 			for (int j=0;j<map.getHeight();j++) {
 				if (map.getGrid()[i][j].getState() == BLOC_STATE)
@@ -44,7 +44,7 @@ public class MapDrawer extends Drawer {
 		}
 		for (Spooce sp : map.spoocePopulation) {
 			drawRect(sp.getX()*s, sp.getY()*s, s, s, Color.GREEN);
-		}
+		}*/
 	}
 
 }

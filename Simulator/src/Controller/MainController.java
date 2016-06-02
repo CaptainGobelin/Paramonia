@@ -28,7 +28,7 @@ public class MainController {
 		console = new ConsoleView(APP_NAME + " - Results");
 		System.out.println("done.");
 		if (!SERVER_MODE) {
-			System.out.print("Opening window... ");
+			/*System.out.print("Opening window... ");
 			window = new MainView(this, APP_NAME);
 			System.out.println("done.");
 			
@@ -45,11 +45,12 @@ public class MainController {
 			map.generate();
 			System.out.println("done.");
 			
-			window.run();
+			window.run();*/
 		}
 		else {
 			console.write("Connection... ");
 			try {
+				@SuppressWarnings("resource")
 				ServerSocket serverSocket = new ServerSocket(PORT_NUMBER, 0, InetAddress.getByName(null));
 				console.writeln("done.");
 				console.writeln("Wait client... ");
@@ -105,7 +106,7 @@ public class MainController {
 			map.newGeneration();
 		}
 		for (int i=0;i<SPEED;i++) {
-			map.grow();
+			//map.grow();
 			for (Paramite p : map.paramitePopulation) {
 				p.step();
 			}

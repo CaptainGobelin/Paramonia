@@ -39,7 +39,7 @@ public class Paramite extends MovingBody implements JsonConverter {
 		this.idleTime = 0;
 		
 		if (parentABrain == null || parentBBrain == null)
-			brain = new NeuralNet(1, 2);
+			brain = new NeuralNet(2, 2);
 		else
 			brain = new NeuralNet(parentABrain, parentBBrain);
 		this.fitness = 0;
@@ -47,6 +47,8 @@ public class Paramite extends MovingBody implements JsonConverter {
 	}
 	
 	public void step() {
+		if (state == EATED_STATE)
+			return;
 		if (energy <= 0)
 			die();
 		else {
@@ -97,6 +99,7 @@ public class Paramite extends MovingBody implements JsonConverter {
 	public void eat(Spooce s) {
 		map.removeSpooce(s);
 		map.spoocePopulation.remove(s);
+		map.grow();
 		energy += PARAMITE_EATING_ENERGY + PARAMITE_EATING_COOLDOWN;
 		idleTime = PARAMITE_EATING_COOLDOWN;
 		state = EATING_STATE;
@@ -144,6 +147,7 @@ public class Paramite extends MovingBody implements JsonConverter {
 				return Double.compare(dist1, dist2);
 			}
 		});
+		float[] brainInputs = new float[2];
 		for (Spooce s : map.spoocePopulation) {
 			if (!checkLine(map, s.getX(), s.getY()))
 				continue;
@@ -155,11 +159,24 @@ public class Paramite extends MovingBody implements JsonConverter {
 			if (angle > Math.PI)
 				angle -= 2*Math.PI;
 			angle /= (2*Math.PI);
-			float[] brainInputs = new float[1];
 			brainInputs[0] = angle;
-			brain.compute(brainInputs);
 			break;
 		}
+		for (Scrab s : map.scrabPopulation) {
+			if (!checkLine(map, (int)s.getX(), (int)s.getY()))
+				continue;
+			float angle = (float) upAngle(s.getX()-x, s.getY()-y);
+			float localRot = (float) (rotation*2*Math.PI/360.f);
+			angle = angle- localRot;
+			if (angle < -Math.PI)
+				angle += 2*Math.PI;
+			if (angle > Math.PI)
+				angle -= 2*Math.PI;
+			angle /= (2*Math.PI);
+			brainInputs[1] = angle;
+			break;
+		}
+		brain.compute(brainInputs);
 		/*double[] objectsInSight = new double[PARAMITE_EYES_NUMBER + 2];
 		for (int i=0;i<objectsInSight.length;i++)
 			objectsInSight[i] = DIST_VIEW;
@@ -211,7 +228,7 @@ public class Paramite extends MovingBody implements JsonConverter {
 
 	@Override
 	public String toJSON() {
-		return "{id: " + id + ", x: " + x + ", y: " + y + "}";
+		return "{id: " + id + ", x: " + x + ", y: " + y + ", st: " + state + "}";
 	}
 
 }

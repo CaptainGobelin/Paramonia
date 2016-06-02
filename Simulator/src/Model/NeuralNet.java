@@ -1,7 +1,7 @@
 package Model;
 
 import java.util.ArrayList;
-import java.util.Comparator;
+//import java.util.Comparator;
 import java.util.Random;
 
 import static Utils.Const.SimConst.*;
@@ -53,9 +53,9 @@ public class NeuralNet {
 		this.outputPlage = parentA.outputPlage;
 		this.nodesLength = parentA.nodesLength;
 		nodes = new float[nodesLength];
-		int inSize = parentA.inputPlage;
+		/*int inSize = parentA.inputPlage;
 		int outSize = parentA.nodesLength - parentA.outputPlage;
-		int hiddenSize = parentA.nodesLength - inSize - outSize;
+		int hiddenSize = parentA.nodesLength - inSize - outSize;*/
 		
 		ArrayList<NeuralConnection> list = parentA.links;
 		int i = 0;
@@ -94,7 +94,7 @@ public class NeuralNet {
 		}
 	}
 	
-	private boolean linkIsNotTaken(int in, int out) {
+	/*private boolean linkIsNotTaken(int in, int out) {
 		for (NeuralConnection nc : links)
 			if (nc.in == in && nc.out == out)
 				return false;
@@ -108,7 +108,7 @@ public class NeuralNet {
 				return Integer.compare(o1.out, o2.out);
 			}
 		});
-	}
+	}*/
 	
 	public String print() {
 		String result = "";

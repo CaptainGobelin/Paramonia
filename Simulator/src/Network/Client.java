@@ -57,6 +57,7 @@ public class Client {
             controller.console.writeln("Data transfer FAILED.");
         } catch (IOException e) {
             e.printStackTrace();
+            System.exit(0);
         }
     }
 
