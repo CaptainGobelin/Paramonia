@@ -6,6 +6,11 @@ public class SimConst {
 	public static final String APP_NAME = "Paramonia";
 	public static final boolean SERVER_MODE = true;
 	public static final int PORT_NUMBER = 12345;
+	public static final int RAS_SIGNAL = 1;
+	public static final int STOP_SIGNAL = 2;
+	public static final int NORMAL_SPEED_SIGNAL = 3;
+	public static final int FASTER_SIGNAL = 4;
+	public static final int BREAK_SIGNAL = 5;
 	
 	//Map generation pattern
 	public static final int GRID_WIDTH = 100;

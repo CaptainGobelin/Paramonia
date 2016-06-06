@@ -7,6 +7,8 @@ import java.net.Socket;
 import java.nio.ByteBuffer;
 
 import Controller.MainController;
+import static Utils.Const.SimConst.*;
+import static Utils.Const.GraphicsConst.*;
 
 public class Client {
 	
@@ -49,11 +51,41 @@ public class Client {
             outputStream.write(bytesSize, 0, 4);
             outputStream.write(bytes, 0, bytes.length);
             outputStream.flush();
-            if (inputStream.read() == 1) {
+            switch (inputStream.read()) {
+            case RAS_SIGNAL: {
             	if (!mute)
-            	controller.console.writeln("done.");
+                	controller.console.writeln("done.");
             	return;
-            }
+            	}
+            case FASTER_SIGNAL: {
+            	if (!mute)
+            		controller.console.writeln("done.");
+            	controller.console.writeln("Receive: faster signal.");
+            	SPEED = 15;
+            	return;
+            	}
+	        case STOP_SIGNAL: {
+	        	if (!mute)
+            		controller.console.writeln("done.");
+            	controller.console.writeln("Receive: stop signal.");
+	        	SPEED = 0;
+	        	return;
+	        	}
+	        case NORMAL_SPEED_SIGNAL: {
+	        	if (!mute)
+            		controller.console.writeln("done.");
+            	controller.console.writeln("Receive: normal speed signal.");
+	        	SPEED = 1;
+	        	return;
+	        	}
+	        case BREAK_SIGNAL: {
+	        	if (!mute)
+            		controller.console.writeln("done.");
+            	controller.console.writeln("Receive: break signal.");
+	        	controller.getMap().newGeneration();
+	        	return;
+	        	}
+	        }
             controller.console.writeln("Data transfer FAILED.");
         } catch (IOException e) {
             e.printStackTrace();
