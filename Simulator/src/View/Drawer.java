@@ -1,12 +1,12 @@
 package View;
 
-//import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.*;
 import static Utils.Const.GraphicsConst.Color;
 import static Utils.Geometry.*;
 
 public abstract class Drawer {
 	
-	/*public void setColor(Color color) {
+	public void setColor(Color color) {
 		switch (color) {
 		case BLACK: glColor3f(0.0f, 0.0f, 0.0f); break;
 		case WHITE: glColor4f(1.f, 1.f, 1.f, 0.1f); break;
@@ -46,6 +46,6 @@ public abstract class Drawer {
         glVertex3f(x+sizeX, y+sizeY, 0.f);
         glVertex3f(x, y+sizeY, 0.f);
         glEnd();
-    }*/
+    }
 
 }

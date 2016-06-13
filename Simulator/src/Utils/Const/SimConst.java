@@ -4,7 +4,7 @@ public class SimConst {
 	
 	//General informations
 	public static final String APP_NAME = "Paramonia";
-	public static final boolean SERVER_MODE = true;
+	public static final boolean SERVER_MODE = false;
 	public static final int PORT_NUMBER = 12345;
 	public static final int RAS_SIGNAL = 1;
 	public static final int STOP_SIGNAL = 2;

@@ -28,7 +28,7 @@ public class MainController {
 		console = new ConsoleView(APP_NAME + " - Results");
 		System.out.println("done.");
 		if (!SERVER_MODE) {
-			/*System.out.print("Opening window... ");
+			System.out.print("Opening window... ");
 			window = new MainView(this, APP_NAME);
 			System.out.println("done.");
 			
@@ -45,7 +45,7 @@ public class MainController {
 			map.generate();
 			System.out.println("done.");
 			
-			window.run();*/
+			window.run();
 		}
 		else {
 			console.write("Connection... ");

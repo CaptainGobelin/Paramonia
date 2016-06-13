@@ -1,7 +1,7 @@
 package View;
 
 
-/*import org.lwjgl.*;
+import org.lwjgl.*;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
 
@@ -10,11 +10,11 @@ import Controller.MainController;
 import static Utils.Const.GraphicsConst.*;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.system.MemoryUtil.*;*/
+import static org.lwjgl.system.MemoryUtil.*;
  
 public class MainView {
 	
-	/*private MainController controller;
+	private MainController controller;
 	private MapDrawer mapDrawer;
  
     // We need to strongly reference callback instances.
@@ -163,6 +163,6 @@ public class MainView {
 
 	public int getHeight() {
 		return height;
-	}*/
+	}
     
 }
