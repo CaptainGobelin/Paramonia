@@ -4,6 +4,9 @@ import static Utils.Const.CellConst.*;
 import static Utils.Const.GraphicsConst.*;
 import static Utils.Const.SimConst.*;
 
+
+import java.util.Comparator;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -23,9 +26,14 @@ public class Map implements JsonConverter {
 	private Cell[][] grid;
 	
 	private float vegetationRate = 0;
-	public ArrayList<Spooce> spoocePopulation = new ArrayList<Spooce>();
-	public ArrayList<Paramite> paramitePopulation = new ArrayList<Paramite>();
-	public ArrayList<Scrab> scrabPopulation = new ArrayList<Scrab>();
+	public List<Spooce> spoocePopulation = new ArrayList<Spooce>();
+	public List<Paramite> paramitePopulation = new ArrayList<Paramite>();
+	public List<Scrab> scrabPopulation = new ArrayList<Scrab>();
+	
+	public List<Paramite> bestParamitePopulation = new ArrayList<Paramite>();
+	public List<Scrab> bestScrabPopulation = new ArrayList<Scrab>();
+	public double bestParamiteFitness = 0;
+	public double bestScrabFitness = 0;
 	
 	public Map(MainController controller, int cellX, int cellY, int cellSize) {
 		this.width = cellX;
@@ -105,8 +113,8 @@ public class Map implements JsonConverter {
 		//Generating new populations
 		for (int i=0;i<width*height*SPOOCE_GROWING_RATE;i++)
 			grow();
-		generateParamitePopulation();
-		generateScrabPopulation();
+		generateFirstParamitePopulation();
+		generateFirstScrabPopulation();
 	}
 	
 	public void clear() {
@@ -120,19 +128,57 @@ public class Map implements JsonConverter {
 	
 	public void newGeneration() {
 		Random rand = new Random();
-		ArrayList<Paramite> newParamitePop = new ArrayList<Paramite>();
+		
+		//compute populations fitness and sort population by fitness
+		double totalFitnessParamite = 0;
+		for (Paramite p : paramitePopulation) {
+			if (p.getState() != DEAD_STATE)
+				p.die();
+			totalFitnessParamite += p.getFitness();
+		}
+		bestParamitePopulation.addAll(paramitePopulation);
+		bestParamitePopulation.sort(new Comparator<Paramite>() {
+			@Override
+			public int compare(Paramite o1, Paramite o2) {
+				return Double.compare(o2.getFitness(), o1.getFitness());
+			}
+		});
+		bestParamitePopulation =  bestParamitePopulation.subList(0, STARTING_PARAMITE_NB);
+		bestParamiteFitness = 0;
+		for (Paramite p : bestParamitePopulation)
+			bestParamiteFitness += p.getFitness();
+		controller.console.write(" Paramite mean fitness: " + (int)totalFitnessParamite/paramitePopulation.size());
+		controller.console.writeln(" (best: " + (int)bestParamiteFitness/bestParamitePopulation.size() + ")");
+		double totalFitnessScrab = 0;
+		for (Scrab s : scrabPopulation) {
+			if (s.getState() != DEAD_STATE)
+				s.die();
+			totalFitnessScrab += s.getFitness();
+		}
+		bestScrabPopulation.addAll(scrabPopulation);
+		bestScrabPopulation.sort(new Comparator<Scrab>() {
+			@Override
+			public int compare(Scrab o1, Scrab o2) {
+				return Double.compare(o2.getFitness(), o1.getFitness());
+			}
+		});
+		bestScrabPopulation = bestScrabPopulation.subList(0, STARTING_SCRAB_NB);
+		bestScrabFitness = 0;
+		for (Scrab s : bestScrabPopulation)
+			bestScrabFitness += s.getFitness();
+		controller.console.write(" Scrab mean fitness: " + (int)totalFitnessScrab/scrabPopulation.size());
+		controller.console.writeln(" (best: " + (int)bestScrabFitness/bestScrabPopulation.size() + ")");
+		
+		List<Paramite> newParamitePop = new ArrayList<Paramite>();
 		Paramite[] parentA = new Paramite[STARTING_PARAMITE_NB];
 		Paramite[] parentB = new Paramite[STARTING_PARAMITE_NB];
-		double totalFitnessParamite = 0;
-		for (Paramite p : paramitePopulation)
-			totalFitnessParamite += p.getFitness() - PARAMITE_STARTING_ENERGY;
-		controller.console.writeln(" Paramite mean fitness: " + totalFitnessParamite/paramitePopulation.size());
+		
 		for (int i=0;i<STARTING_PARAMITE_NB;i++) {
 			float r = rand.nextFloat();
 			double objective = 0;
-			parentA[i] = paramitePopulation.get(0);
-			for (Paramite p : paramitePopulation) {
-				objective += p.getFitness()/totalFitnessParamite;
+			parentA[i] = bestParamitePopulation.get(0);
+			for (Paramite p : bestParamitePopulation) {
+				objective += p.getFitness()/bestParamiteFitness;
 				if (r <= objective) {
 					parentA[i] = p;
 					break;
@@ -142,9 +188,9 @@ public class Map implements JsonConverter {
 		for (int i=0;i<STARTING_PARAMITE_NB;i++) {
 			float r = rand.nextFloat();
 			double objective = 0;
-			parentB[i] = paramitePopulation.get(0);
-			for (Paramite p : paramitePopulation) {
-				objective += p.getFitness()/totalFitnessParamite;
+			parentB[i] = bestParamitePopulation.get(0);
+			for (Paramite p : bestParamitePopulation) {
+				objective += p.getFitness()/bestParamiteFitness;
 				if (r <= objective) {
 					parentB[i] = p;
 					break;
@@ -154,19 +200,16 @@ public class Map implements JsonConverter {
 		for (int i=0;i<STARTING_PARAMITE_NB;i++)
 			newParamitePop.add(new Paramite(this, parentA[i].getBrain(), parentB[i].getBrain()));
 		
-		ArrayList<Scrab> newScrabPop = new ArrayList<Scrab>();
+		List<Scrab> newScrabPop = new ArrayList<Scrab>();
 		Scrab[] parentAb = new Scrab[STARTING_SCRAB_NB];
 		Scrab[] parentBb = new Scrab[STARTING_SCRAB_NB];
-		double totalFitnessScrab = 0;
-		for (Scrab s : scrabPopulation)
-			totalFitnessScrab += s.getFitness() - SCRAB_STARTING_ENERGY;
-		controller.console.writeln(" Scrab mean fitness: " + totalFitnessScrab/scrabPopulation.size());
+		
 		for (int i=0;i<STARTING_SCRAB_NB;i++) {
 			float r = rand.nextFloat();
 			double objective = 0;
-			parentAb[i] = scrabPopulation.get(0);
-			for (Scrab s : scrabPopulation) {
-				objective += s.getFitness()/totalFitnessScrab;
+			parentAb[i] = bestScrabPopulation.get(0);
+			for (Scrab s : bestScrabPopulation) {
+				objective += s.getFitness()/bestScrabFitness;
 				if (r <= objective) {
 					parentAb[i] = s;
 					break;
@@ -176,9 +219,9 @@ public class Map implements JsonConverter {
 		for (int i=0;i<STARTING_SCRAB_NB;i++) {
 			float r = rand.nextFloat();
 			double objective = 0;
-			parentBb[i] = scrabPopulation.get(0);
-			for (Scrab s : scrabPopulation) {
-				objective += s.getFitness()/totalFitnessScrab;
+			parentBb[i] = bestScrabPopulation.get(0);
+			for (Scrab s : bestScrabPopulation) {
+				objective += s.getFitness()/bestScrabFitness;
 				if (r <= objective) {
 					parentBb[i] = s;
 					break;
@@ -277,14 +320,18 @@ public class Map implements JsonConverter {
 		//spoocePopulation.remove(spooce);
 	}
 	
-	public void generateParamitePopulation() {
-		for (int i=0;i<STARTING_PARAMITE_NB;i++)
+	public void generateFirstParamitePopulation() {
+		for (int i=0;i<STARTING_PARAMITE_NB;i++) {
 			paramitePopulation.add(new Paramite(this, null, null));
+			bestParamitePopulation.add(new Paramite(this, null, null));
+		}
 	}
 	
-	public void generateScrabPopulation() {
-		for (int i=0;i<STARTING_SCRAB_NB;i++)
+	public void generateFirstScrabPopulation() {
+		for (int i=0;i<STARTING_SCRAB_NB;i++) {
 			scrabPopulation.add(new Scrab(this, null, null));
+			bestScrabPopulation.add(new Scrab(this, null, null));
+		}
 	}
 	
 	public void convertGrass() {

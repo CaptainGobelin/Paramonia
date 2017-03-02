@@ -24,6 +24,7 @@ public abstract class MovingBody {
 	protected double energy;
 	protected int state;
 	protected int idleTime;
+	protected double fitness;
 	
 	public MovingBody() {
 		id = createID();
@@ -85,6 +86,11 @@ public abstract class MovingBody {
 		return true;
 	}
 	
+	public void die() {
+		state = DEAD_STATE;
+		fitness += energy;
+	}
+	
 	public float getX() {
 		return x;
 	}
@@ -115,6 +121,10 @@ public abstract class MovingBody {
 	
 	public int getState() {
 		return this.state;
+	}
+	
+	public double getFitness() {
+		return this.fitness;
 	}
 	
 }

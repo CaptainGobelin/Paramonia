@@ -44,7 +44,7 @@ public class SimConst {
 	public static final double PARAMITE_EATING_ENERGY = 500;
 	public static final int PARAMITE_EATING_COOLDOWN = 75;
 	
-	public static final float SCRAB_SPEED_DEFAULT = 0.065f;
+	public static final float SCRAB_SPEED_DEFAULT = 0.05f;
 	public static final float SCRAB_ROATION_SPEED_DEFAULT = 10.0f;
 	public static final int SCRAB_EYES_NUMBER = 3;
 	public static final double SCRAB_STARTING_ENERGY = 10000;

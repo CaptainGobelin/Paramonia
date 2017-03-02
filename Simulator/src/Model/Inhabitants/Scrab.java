@@ -17,7 +17,6 @@ import Utils.JsonConverter;
 public class Scrab extends MovingBody implements JsonConverter {
 	
 	private NeuralNet brain;
-	private double fitness;
 	
 	private Paramite food;
 	
@@ -44,7 +43,7 @@ public class Scrab extends MovingBody implements JsonConverter {
 			brain = new NeuralNet(1, 2);
 		else
 			brain = new NeuralNet(parentABrain, parentBBrain);
-		this.fitness = 0;
+		this.fitness = -SCRAB_STARTING_ENERGY;
 		this.food = null;
 	}
 	
@@ -91,10 +90,6 @@ public class Scrab extends MovingBody implements JsonConverter {
 		if (food != null) {
 			eat(food);
 		}
-	}
-	
-	public void die() {
-		state = DEAD_STATE;
 	}
 	
 	public void eat(Paramite p) {
@@ -164,10 +159,6 @@ public class Scrab extends MovingBody implements JsonConverter {
 			brain.compute(brainInputs);
 			break;
 		}
-	}
-	
-	public double getFitness() {
-		return this.fitness;
 	}
 	
 	public NeuralNet getBrain() {

@@ -32,7 +32,6 @@ public class MapDrawer extends Drawer {
 				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 				if (map.getGrid()[i][j].isViewed() && map.getGrid()[i][j].getState() < BLOC_STATE) {
 					drawRect(i*s, j*s, s, s, Color.WHITE);
-					map.getGrid()[i][j].setViewed(false);
 				}
 				glDisable(GL_BLEND);
 			}

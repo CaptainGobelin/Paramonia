@@ -15,7 +15,6 @@ import static Utils.Geometry.*;
 public class Paramite extends MovingBody implements JsonConverter {
 	
 	private NeuralNet brain;
-	private double fitness;
 	
 	private Spooce food;
 	
@@ -42,7 +41,7 @@ public class Paramite extends MovingBody implements JsonConverter {
 			brain = new NeuralNet(2, 2);
 		else
 			brain = new NeuralNet(parentABrain, parentBBrain);
-		this.fitness = 0;
+		this.fitness = -PARAMITE_STARTING_ENERGY;
 		this.food = null;
 	}
 	
@@ -90,10 +89,6 @@ public class Paramite extends MovingBody implements JsonConverter {
 		if (food != null) {
 			eat(food);
 		}
-	}
-	
-	public void die() {
-		state = DEAD_STATE;
 	}
 	
 	public void eat(Spooce s) {
@@ -162,6 +157,16 @@ public class Paramite extends MovingBody implements JsonConverter {
 			brainInputs[0] = angle;
 			break;
 		}
+		
+		map.scrabPopulation.sort(new Comparator<Scrab>() {
+
+			@Override
+			public int compare(Scrab o1, Scrab o2) {
+				double dist1 = distance2(o1.getX(), o1.getY(), x, y);
+				double dist2 = distance2(o2.getX(), o2.getY(), x, y);
+				return Double.compare(dist1, dist2);
+			}
+		});
 		for (Scrab s : map.scrabPopulation) {
 			if (!checkLine(map, (int)s.getX(), (int)s.getY()))
 				continue;
@@ -216,10 +221,6 @@ public class Paramite extends MovingBody implements JsonConverter {
 			brainInputs[i*3 + 2] = .2f;
 		}
 		brain.compute(brainInputs);*/
-	}
-	
-	public double getFitness() {
-		return this.fitness;
 	}
 	
 	public NeuralNet getBrain() {

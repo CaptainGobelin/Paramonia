@@ -50,7 +50,6 @@ public class MainController {
 		else {
 			console.write("Connection... ");
 			try {
-				@SuppressWarnings("resource")
 				ServerSocket serverSocket = new ServerSocket(PORT_NUMBER, 0, InetAddress.getByName(null));
 				console.writeln("done.");
 				console.writeln("Wait client... ");
@@ -105,6 +104,10 @@ public class MainController {
 			console.writeln("Oh no ! Everybody's dead !");
 			map.newGeneration();
 		}
+		for (int i=0;i<map.getWidth();i++)
+			for (int j=0;j<map.getHeight();j++) {
+				map.getGrid()[i][j].setViewed(false);
+			}
 		for (int i=0;i<SPEED;i++) {
 			//map.grow();
 			for (Paramite p : map.paramitePopulation) {
